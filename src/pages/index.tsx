@@ -1,8 +1,9 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Varela_Round } from "@next/font/google";
+import NiceModal from "@ebay/nice-modal-react";
+import { AddToastModal } from "../modals/add-toast";
 
 const varelaRound = Varela_Round({ weight: ["400"], subsets: ["hebrew"] });
 
@@ -23,20 +24,12 @@ const Home: NextPage = () => {
             <span className="text-[hsl(280,100%,70%)]">שתיות</span>
           </h1>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
+            <button
               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
+              onClick={() => void NiceModal.show(AddToastModal)}
             >
               <h3 className="text-2xl font-bold">הוספת שתיה</h3>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">הוספת שתיה</h3>
-            </Link>
+            </button>
           </div>
           <div className="flex flex-col items-center gap-2">
             <AuthShowcase />
