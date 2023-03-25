@@ -7,6 +7,7 @@ interface Props extends PropsWithChildren {
   title: string;
   niceModalHandler: NiceModalHandler;
   allowClose?: boolean;
+  maxWidth?: "max-w-2xl" | "max-w-md";
 }
 
 export const Modal = ({
@@ -14,6 +15,7 @@ export const Modal = ({
   children,
   niceModalHandler,
   allowClose = true,
+  maxWidth = "max-w-md",
 }: Props) => {
   const closeModal = () => {
     void niceModalHandler.hide();
@@ -53,7 +55,9 @@ export const Modal = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-right align-middle shadow-xl transition-all">
+              <Dialog.Panel
+                className={`${maxWidth}  transform overflow-hidden  rounded-2xl bg-white p-6 text-right align-middle shadow-xl transition-all`}
+              >
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"

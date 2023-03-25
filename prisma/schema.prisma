@@ -14,12 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -55,6 +49,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    Toast         Toast[]
 }
 
 model VerificationToken {
@@ -63,4 +58,23 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+// toast models
+model Toast {
+    id           String   @id @default(cuid())
+    userId       String
+    ocasionId    String
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    ocasion      Ocasion  @relation(fields: [ocasionId], references: [id], onDelete: Cascade)
+    dateToBeDone DateTime
+    wasDone      Boolean  @default(false)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+}
+
+model Ocasion {
+    id    String  @id @default(cuid())
+    name  String
+    Toast Toast[]
 }
