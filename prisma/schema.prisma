@@ -64,16 +64,16 @@ model VerificationToken {
 model Toast {
     id           String   @id @default(cuid())
     userId       String
-    ocasionId    String
+    occasionId   String
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    ocasion      Ocasion  @relation(fields: [ocasionId], references: [id], onDelete: Cascade)
+    occasionid   Occasion @relation(fields: [occasionId], references: [id], onDelete: Cascade)
     dateToBeDone DateTime
     wasDone      Boolean  @default(false)
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
 }
 
-model Ocasion {
+model Occasion {
     id    String  @id @default(cuid())
     name  String
     Toast Toast[]
