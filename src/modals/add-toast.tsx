@@ -1,5 +1,6 @@
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useState } from "react";
+import { Select } from "../components/select";
 import { Modal } from "../components/modal";
 import { api } from "../utils/api";
 
@@ -7,26 +8,28 @@ export const AddToastModal = NiceModal.create(() => {
   const modal = useModal();
 
   const { mutate } = api.toast.create.useMutation();
+  const { data: occasions } = api.occasion.getAll.useQuery();
 
   const closeModal = () => void modal.hide();
 
-  const [allowClose, setAllowClose] = useState(false);
+  const [selectedOccasion, setSelectedOccasion] = useState({
+    id: "",
+    name: "יש לבחור",
+  });
 
   return (
-    <Modal niceModalHandler={modal} title="הוספת שתיה" allowClose={allowClose}>
+    <Modal niceModalHandler={modal} title="הוספת שתיה">
       <div>
-        <div className="mt-2">
-          <p className="text-sm text-gray-500">asas</p>
+        <div className="mt-2 h-96">
+          {occasions && occasions[0] ? (
+            <Select
+              options={occasions}
+              renderOption={(occasion) => occasion.name}
+              selectedOption={selectedOccasion}
+              onChange={setSelectedOccasion}
+            />
+          ) : null}
         </div>
-        <input
-          type="checkbox"
-          name=""
-          id=""
-          checked={allowClose}
-          onChange={() => {
-            setAllowClose((is) => !is);
-          }}
-        />
         <div className="mt-4">
           <button
             type="button"
@@ -34,11 +37,10 @@ export const AddToastModal = NiceModal.create(() => {
             onClick={() => {
               mutate({
                 dateToBeDone: new Date(),
-                occasionId: "clfnulx4x00158ou0r2be0kiq",
+                occasionId: selectedOccasion.id,
               });
-              allowClose && closeModal();
+              closeModal();
             }}
-            disabled={!allowClose}
           >
             הוספה
           </button>

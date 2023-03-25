@@ -3,11 +3,18 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import type { PropsWithChildren } from "react";
 
+const sizeMap = {
+  small: "max-w-md",
+  default: "max-w-lg",
+  large: "max-w-4xl",
+  extralarge: "max-w-7xl",
+} as const;
+
 interface Props extends PropsWithChildren {
   title: string;
   niceModalHandler: NiceModalHandler;
   allowClose?: boolean;
-  maxWidth?: "max-w-2xl" | "max-w-md";
+  size?: keyof typeof sizeMap;
 }
 
 export const Modal = ({
@@ -15,7 +22,7 @@ export const Modal = ({
   children,
   niceModalHandler,
   allowClose = true,
-  maxWidth = "max-w-md",
+  size = "default",
 }: Props) => {
   const closeModal = () => {
     void niceModalHandler.hide();
@@ -56,7 +63,7 @@ export const Modal = ({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel
-                className={`${maxWidth}  transform overflow-hidden  rounded-2xl bg-white p-6 text-right align-middle shadow-xl transition-all`}
+                className={`${sizeMap[size]} h-full w-full transform overflow-hidden  rounded-2xl bg-white p-6 text-right align-middle shadow-xl transition-all`}
               >
                 <Dialog.Title
                   as="h3"

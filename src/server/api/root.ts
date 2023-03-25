@@ -1,5 +1,6 @@
 import { createTRPCRouter } from "./trpc";
 import { toast } from "./routers/toast";
+import { occasion } from "./routers/occasion";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { toast } from "./routers/toast";
  */
 export const appRouter = createTRPCRouter({
   toast,
+  occasion,
 });
 
 // export type definition of API
