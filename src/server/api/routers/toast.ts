@@ -1,9 +1,14 @@
 import { z } from "zod";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const toast = createTRPCRouter({
+  getAllByUser: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.toast.findMany({
+      where: { userId: ctx.session.user.id },
+      include: { occasion: { select: { name: true } } },
+    });
+  }),
   create: protectedProcedure
     .input(
       z.object({

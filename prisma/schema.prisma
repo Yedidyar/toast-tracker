@@ -66,7 +66,7 @@ model Toast {
     userId       String
     occasionId   String
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    occasionid   Occasion @relation(fields: [occasionId], references: [id], onDelete: Cascade)
+    occasion     Occasion @relation(fields: [occasionId], references: [id], onDelete: Cascade)
     dateToBeDone DateTime
     wasDone      Boolean  @default(false)
     createdAt    DateTime @default(now())
