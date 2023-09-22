@@ -5,6 +5,7 @@ import { Varela_Round } from "@next/font/google";
 import NiceModal from "@ebay/nice-modal-react";
 import { AddToastModal } from "~/modals/add-toast";
 import { api } from "~/utils/api";
+import { Button } from "~/components/ui/button";
 
 const varelaRound = Varela_Round({ weight: ["400"], subsets: ["hebrew"] });
 
@@ -30,12 +31,12 @@ const Home: NextPage = () => {
           </h1>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
             {sessionData && (
-              <button
-                className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+              <Button
+                variant="secondary"
                 onClick={() => void NiceModal.show(AddToastModal)}
               >
-                <h3 className="text-2xl font-bold">הוספת שתיה</h3>
-              </button>
+                הוספת שתיה
+              </Button>
             )}
           </div>
 
