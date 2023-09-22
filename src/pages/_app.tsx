@@ -7,7 +7,6 @@ import { api } from "../utils/api";
 import "../styles/globals.css";
 import NiceModal from "@ebay/nice-modal-react";
 import { ThemeProvider } from "~/components/theme-provider";
-import { MantineProvider } from "@mantine/core";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -16,16 +15,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <NiceModal.Provider>
-        <MantineProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Component {...pageProps} />
-          </ThemeProvider>
-        </MantineProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Component {...pageProps} />
+        </ThemeProvider>
       </NiceModal.Provider>
     </SessionProvider>
   );

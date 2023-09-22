@@ -30,7 +30,7 @@ type Props = {
 
 export function ToastCard({ dateToBeDone, occasion, user }: Props) {
   return (
-    <Card className="w-[350px] p-10">
+    <Card className="h-52 w-52 p-10">
       <CardHeader>
         <CardTitle>
           {user.name} - {occasion.name}
