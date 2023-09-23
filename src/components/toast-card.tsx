@@ -9,28 +9,37 @@ import {
 
 import format from "date-fns/format";
 import { he } from "date-fns/locale";
+import type { Occasion, Toast } from "@prisma/client";
+import NiceModal from "@ebay/nice-modal-react";
+import { EditToastModal } from "~/modals/toasts";
+import { cn } from "~/lib/utils";
+import { useSession } from "next-auth/react";
 
 type Props = {
-  occasion: {
-    name: string;
-  };
-} & {
-  id: string;
-  userId: string;
-  occasionId: string;
-  dateToBeDone: Date;
-  wasDone: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-} & {
+  occasion: Pick<Occasion, "name">;
   user: {
     name: string | null;
   };
-};
+  className?: string;
+} & Toast;
 
-export function ToastCard({ dateToBeDone, occasion, user }: Props) {
+export function ToastCard(props: Props) {
+  const { data: sessionData } = useSession();
+
+  const { dateToBeDone, occasion, user } = props;
   return (
-    <Card className="h-52 w-52 p-10">
+    <Card
+      className={cn(
+        "h-52 w-52 transform  bg-primary-foreground p-10 transition duration-500 hover:scale-110",
+        props.className,
+        sessionData && "cursor-pointer"
+      )}
+      onClick={() => {
+        if (sessionData) {
+          return NiceModal.show(EditToastModal, { toast: props });
+        }
+      }}
+    >
       <CardHeader>
         <CardTitle>
           {user.name} - {occasion.name}
