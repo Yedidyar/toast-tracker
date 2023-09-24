@@ -4,6 +4,7 @@ import { DayPicker } from "react-day-picker";
 
 import { cn } from "~/lib/utils";
 import { buttonVariants } from "~/components/ui/button";
+import { he } from "date-fns/locale";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -60,6 +61,7 @@ function Calendar({
         IconLeft: () => <ChevronLeftIcon className="h-4 w-4" />,
         IconRight: () => <ChevronRightIcon className="h-4 w-4" />,
       }}
+      locale={he}
       {...props}
     />
   );

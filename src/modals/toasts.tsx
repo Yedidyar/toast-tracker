@@ -26,6 +26,16 @@ import { Checkbox } from "~/components/ui/checkbox";
 import type { ReactNode } from "react";
 import type { Toast } from "@prisma/client";
 import { Combobox } from "~/components/ui/combobox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { cn } from "~/lib/utils";
+import format from "date-fns/format";
+import { Calendar } from "~/components/ui/calendar";
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { he } from "date-fns/locale";
 
 const ToastFormSchema = z.object({
   dateToBeDone: z.date(),
@@ -224,7 +234,46 @@ const ToastForm = ({
             );
           }}
         />
-
+        <FormField
+          control={form.control}
+          name="dateToBeDone"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>תאריך</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP", { locale: he })
+                      ) : (
+                        <span>בחר תאריך</span>
+                      )}
+                      <CalendarIcon className="mr-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormDescription>התאריך שבו השתיה תקרה</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="wasDone"
@@ -236,8 +285,9 @@ const ToastForm = ({
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <div className="p-4">
+              <div className="space-y-1 leading-none">
                 <FormLabel>האם נעשה</FormLabel>
+                <FormDescription>זה ישפיע על האם השתיה נספרת</FormDescription>
               </div>
             </FormItem>
           )}
