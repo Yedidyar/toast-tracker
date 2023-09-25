@@ -1,5 +1,5 @@
 import type { Session } from "next-auth";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -12,12 +12,13 @@ import {
 import { signOut } from "next-auth/react";
 
 type Props = Session;
-export function UserNav({ user: { email, name } }: Props) {
+export function UserNav({ user: { email, name, image } }: Props) {
   return (
     <DropdownMenu dir="rtl">
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
+            {image && name && <AvatarImage src={image} alt={name} />}
             <AvatarFallback>{name?.slice(0, 2)}</AvatarFallback>
           </Avatar>
         </Button>
