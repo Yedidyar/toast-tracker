@@ -12,7 +12,12 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { Criminals } from "~/components/criminals";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  GitHubLogoIcon,
+} from "@radix-ui/react-icons";
+import Link from "next/link";
 
 const take = 10;
 const Home: NextPage = () => {
@@ -42,6 +47,9 @@ const Home: NextPage = () => {
                 <Button onClick={() => signIn()}>התחבר</Button>
               )}
             </div>
+            <Link href="https://github.com/Yedidyar/toast-tracker">
+              <GitHubLogoIcon />
+            </Link>
           </div>
         </div>
 
@@ -92,6 +100,7 @@ const Home: NextPage = () => {
                 onClick={() => {
                   setSkip((prev) => prev + take);
                 }}
+                disabled={data?.length === 0}
               >
                 <ChevronLeftIcon className="h-4 w-4" />
               </Button>
