@@ -11,15 +11,55 @@ const getStartOfPeriod = () => {
   return new Date(currentDate.getFullYear(), 0);
 };
 
+const periodHistory = [
+  {
+    name: "2023/1",
+    toasts: 35,
+  },
+  {
+    name: "2022/2",
+    toasts: 34,
+  },
+];
+
+const getMaxPeriod = () => {
+  let max = periodHistory[0];
+
+  periodHistory.forEach((period) => {
+    const toast = max?.toasts ?? 0;
+    if (period.toasts > toast) {
+      max = period;
+    }
+  });
+  if (!max) throw new Error("can't find max");
+
+  return max;
+};
+
 export const toast = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.toast.findMany({
-      include: {
-        occasion: { select: { name: true } },
-        user: { select: { name: true } },
-      },
-    });
-  }),
+  getAll: publicProcedure
+    .input(
+      z.object({
+        take: z.number(),
+        skip: z.number(),
+      })
+    )
+    .query(({ ctx, input: { skip, take } }) => {
+      const isAdmin = ctx.session?.user.role === "ADMIN";
+
+      return ctx.prisma.toast.findMany({
+        include: {
+          occasion: { select: { name: true } },
+          user: { select: { name: true } },
+        },
+        orderBy: [{ dateToBeDone: isAdmin ? "desc" : "asc" }],
+        take,
+        skip,
+        where: isAdmin
+          ? {}
+          : { dateToBeDone: { gte: new Date(Date.now() - 60 * 1000 * 30) } },
+      });
+    }),
   getAllByUser: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.toast.findMany({
       where: { userId: ctx.session.user.id },
@@ -71,8 +111,21 @@ export const toast = createTRPCRouter({
         });
       }
     ),
-  getCurrentCount: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.toast.count({
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input: { id } }) => {
+      return ctx.prisma.toast.delete({
+        where: {
+          id,
+        },
+      });
+    }),
+  getLeaderBoard: publicProcedure.query(async ({ ctx }) => {
+    const toastCountInThisPeriod = await ctx.prisma.toast.count({
       where: {
         AND: [
           {
@@ -84,5 +137,6 @@ export const toast = createTRPCRouter({
         ],
       },
     });
+    return { toastCountInThisPeriod, maxPeriod: getMaxPeriod() };
   }),
 });

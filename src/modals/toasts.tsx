@@ -23,7 +23,7 @@ import {
 } from "~/components/ui/form";
 import { Checkbox } from "~/components/ui/checkbox";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode, useRef } from "react";
 import type { Toast } from "@prisma/client";
 import { Combobox } from "~/components/ui/combobox";
 import {
@@ -36,6 +36,11 @@ import format from "date-fns/format";
 import { Calendar } from "~/components/ui/calendar";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { he } from "date-fns/locale";
+import { Loading } from "~/components/ui/loading";
+import { Input } from "~/components/ui/input";
+import type { SelectSingleEventHandler } from "react-day-picker";
+import JSConfetti from "js-confetti";
+import { useSession } from "next-auth/react";
 
 const ToastFormSchema = z.object({
   dateToBeDone: z.date(),
@@ -44,12 +49,21 @@ const ToastFormSchema = z.object({
   wasDone: z.boolean().optional(),
 });
 
+const loadingContainerClassName =
+  "absolute left-[50%] top-[50%] z-50 h-full w-full translate-x-[-50%] translate-y-[-50%]";
+
 export const AddToastModal = NiceModal.create(() => {
+  const jsConfettiRef = useRef<JSConfetti>();
+
+  useEffect(() => {
+    jsConfettiRef.current = new JSConfetti();
+  }, []);
+
   const modal = useModal();
 
   const utils = api.useContext();
 
-  const { mutateAsync } = api.toast.create.useMutation({
+  const { mutateAsync, isLoading } = api.toast.create.useMutation({
     onSuccess: () => {
       utils.toast.invalidate().catch((e) => {
         console.error(e);
@@ -59,6 +73,7 @@ export const AddToastModal = NiceModal.create(() => {
 
   const onSubmit = async (values: z.infer<typeof ToastFormSchema>) => {
     await mutateAsync(values);
+    void jsConfettiRef.current?.addConfetti();
     closeModal();
   };
 
@@ -78,14 +93,25 @@ export const AddToastModal = NiceModal.create(() => {
           <DialogTitle>הוספת שתיה</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <ToastForm
-          onSubmit={onSubmit}
-          footer={
-            <DialogFooter>
-              <Button type="submit">יצירה</Button>
-            </DialogFooter>
-          }
-        />
+        <div className="relative">
+          {isLoading && (
+            <div className={loadingContainerClassName}>
+              <Loading />
+            </div>
+          )}
+          <div className={cn(isLoading && "opacity-50")}>
+            <ToastForm
+              onSubmit={onSubmit}
+              footer={
+                <DialogFooter>
+                  <Button type="submit" disabled={isLoading}>
+                    יצירה
+                  </Button>
+                </DialogFooter>
+              }
+            />
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -96,8 +122,9 @@ export const EditToastModal = NiceModal.create(
     const modal = useModal();
 
     const utils = api.useContext();
+    const { data: sessionData } = useSession();
 
-    const { mutateAsync } = api.toast.update.useMutation({
+    const { mutateAsync, isLoading } = api.toast.update.useMutation({
       onSuccess: () => {
         utils.toast.invalidate().catch((e) => {
           console.error(e);
@@ -105,6 +132,19 @@ export const EditToastModal = NiceModal.create(
       },
     });
 
+    const { mutateAsync: mutateDeleteAsync, isLoading: isLoadingDelete } =
+      api.toast.delete.useMutation({
+        onSuccess: () => {
+          utils.toast.invalidate().catch((e) => {
+            console.error(e);
+          });
+        },
+      });
+
+    const onDelete = async () => {
+      await mutateDeleteAsync({ id: toast.id });
+      closeModal();
+    };
     const onSubmit = async (values: z.infer<typeof ToastFormSchema>) => {
       await mutateAsync({ ...values, id: toast.id });
       closeModal();
@@ -126,15 +166,36 @@ export const EditToastModal = NiceModal.create(
             <DialogTitle>עריכת שתיה</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          <ToastForm
-            onSubmit={onSubmit}
-            defaultValues={toast}
-            footer={
-              <DialogFooter>
-                <Button type="submit">עריכה</Button>
-              </DialogFooter>
-            }
-          />
+          <div className="relative">
+            {(isLoading || isLoadingDelete) && (
+              <div className={loadingContainerClassName}>
+                <Loading />
+              </div>
+            )}
+            <div className={cn(isLoading && "opacity-50")}>
+              <ToastForm
+                onSubmit={onSubmit}
+                defaultValues={toast}
+                footer={
+                  <DialogFooter className="flex gap-4">
+                    {(sessionData?.user.role === "ADMIN" ||
+                      sessionData?.user.id === toast.userId) && (
+                      <Button
+                        variant="destructive"
+                        disabled={isLoading}
+                        onClick={onDelete}
+                      >
+                        מחיקה
+                      </Button>
+                    )}
+                    <Button type="submit" disabled={isLoading}>
+                      עריכה
+                    </Button>
+                  </DialogFooter>
+                }
+              />
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -150,6 +211,7 @@ const ToastForm = ({
   defaultValues?: Toast;
   footer: ReactNode;
 }) => {
+  const { data: sessionData } = useSession();
   const form = useForm({
     resolver: zodResolver(ToastFormSchema),
     defaultValues: defaultValues ?? {
@@ -237,61 +299,118 @@ const ToastForm = ({
         <FormField
           control={form.control}
           name="dateToBeDone"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>תאריך</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP", { locale: he })
-                      ) : (
-                        <span>בחר תאריך</span>
-                      )}
-                      <CalendarIcon className="mr-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
+          render={({ field }) => {
+            const handleTimeChange: React.ChangeEventHandler<
+              HTMLInputElement
+            > = (e) => {
+              const time = e.target.value;
+              if (!time) {
+                form.setValue(
+                  "dateToBeDone",
+                  new Date(
+                    field.value.getFullYear(),
+                    field.value.getMonth(),
+                    field.value.getDate()
+                  )
+                );
+                return;
+              }
+
+              const [hours, minutes] = time
+                .split(":")
+                .map((str) => parseInt(str, 10));
+              const newSelectedDate = new Date(
+                field.value.getFullYear(),
+                field.value.getMonth(),
+                field.value.getDate(),
+                hours,
+                minutes
+              );
+
+              form.setValue("dateToBeDone", newSelectedDate);
+            };
+
+            const handleDateChange: SelectSingleEventHandler = (e) => {
+              if (!e) {
+                form.resetField("dateToBeDone");
+                return;
+              }
+              const newSelectedDate = new Date(
+                e?.getFullYear(),
+                e?.getMonth(),
+                e?.getDate(),
+                field.value.getHours(),
+                field.value.getMinutes()
+              );
+
+              form.setValue("dateToBeDone", newSelectedDate);
+            };
+
+            return (
+              <FormItem className="flex flex-col">
+                <FormLabel>תאריך</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[240px] pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "Pp", { locale: he })
+                        ) : (
+                          <span>בחר תאריך</span>
+                        )}
+                        <CalendarIcon className="mr-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={handleDateChange}
+                      disabled={(date) => date < new Date()}
+                      footer={
+                        <Input
+                          type="time"
+                          value={format(field.value, "HH:mm", { locale: he })}
+                          onChange={handleTimeChange}
+                        />
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormDescription>התאריך שבו השתיה תקרה</FormDescription>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        {sessionData?.user.role === "ADMIN" && (
+          <FormField
+            control={form.control}
+            name="wasDone"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-4">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                   />
-                </PopoverContent>
-              </Popover>
-              <FormDescription>התאריך שבו השתיה תקרה</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="wasDone"
-          render={({ field }) => (
-            <FormItem className="flex items-center gap-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>האם נעשה</FormLabel>
-                <FormDescription>זה ישפיע על האם השתיה נספרת</FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>האם נעשה</FormLabel>
+                  <FormDescription>זה ישפיע על האם השתיה נספרת</FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+        )}
         {footer}
       </form>
     </Form>
