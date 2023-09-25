@@ -14,6 +14,7 @@ import NiceModal from "@ebay/nice-modal-react";
 import { EditToastModal } from "~/modals/toasts";
 import { cn } from "~/lib/utils";
 import { useSession } from "next-auth/react";
+import { Skeleton } from "./ui/skeleton";
 
 type Props = {
   occasion: Pick<Occasion, "name">;
@@ -23,6 +24,8 @@ type Props = {
   className?: string;
 } & Toast;
 
+const className = "h-44 w-44 p-5 lg:h-52 lg:w-52 bg-primary-foreground lg:p-10";
+
 export function ToastCard(props: Props) {
   const { data: sessionData } = useSession();
 
@@ -30,9 +33,10 @@ export function ToastCard(props: Props) {
   return (
     <Card
       className={cn(
-        "h-52 w-52 transform  bg-primary-foreground p-10 transition duration-500 hover:scale-110",
+        "transform transition duration-500 hover:scale-110",
         props.className,
-        sessionData && "cursor-pointer"
+        sessionData && "cursor-pointer",
+        className
       )}
       onClick={() => {
         if (sessionData) {
@@ -50,4 +54,8 @@ export function ToastCard(props: Props) {
       </CardHeader>
     </Card>
   );
+}
+
+export function ToastCardSkelton() {
+  return <Skeleton className={className} />;
 }

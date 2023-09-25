@@ -32,7 +32,9 @@ export function UserNav({ user: { email, name } }: Props) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>התנתק</DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => signOut()}>
+          התנתק
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
