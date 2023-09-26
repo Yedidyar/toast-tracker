@@ -1,7 +1,7 @@
 ## Prerequisites
 
-This project requires NodeJS (version 16 or later) and PNPM and docker.
-[Node](http://nodejs.org/) and [PNPM](https://pnpm.io/) [Docker](https://www.docker.com/) are really easy to install.
+This project requires NodeJS (version 16 or later), PNPM and docker.
+[Node](http://nodejs.org/), [PNPM](https://pnpm.io/) and [Docker](https://www.docker.com/) are really easy to install.
 To make sure you have them available on your machine,
 try running the following command.
 
