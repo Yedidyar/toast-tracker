@@ -1,28 +1,51 @@
-# Create T3 App
+## Prerequisites
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This project requires NodeJS (version 16 or later) and PNPM and docker.
+[Node](http://nodejs.org/) and [PNPM](https://pnpm.io/) [Docker](https://www.docker.com/) are really easy to install.
+To make sure you have them available on your machine,
+try running the following command.
 
-## What's next? How do I make an app with this?
+```sh
+$ pnpm -v && node -v
+```
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Table of contents
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- [Project Name](#project-name)
+  - [Prerequisites](#prerequisites)
+  - [Table of contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [Installation](#installation)
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Getting Started
 
-## Learn More
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## Installation
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+**BEFORE YOU INSTALL:** please read the [prerequisites](#prerequisites)
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Start with cloning this repo on your local machine:
 
-## How do I deploy this?
+```sh
+$ git clone https://github.com/Yedidyar/toast-tracker
+$ cd toast-tracker
+```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+To install and set up, run:
+
+```sh
+$ pnpm install
+```
+
+```sh
+$ docker compose up
+```
+
+### Serving the app
+
+don't forget to add the env file see the [env.example](https://github.com/Yedidyar/toast-tracker/blob/2127685845d31d1d29f26a932b8aa3fcd4ba5edd/.env.example)
+
+```sh
+$ npm run dev
+```
