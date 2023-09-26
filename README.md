@@ -1,12 +1,12 @@
 ## Prerequisites
 
-This project requires NodeJS (version 16 or later), PNPM and docker.
+This project requires NodeJS (version 16 or later), PNPM and docker (recommended but optional).
 [Node](http://nodejs.org/), [PNPM](https://pnpm.io/) and [Docker](https://www.docker.com/) are really easy to install.
 To make sure you have them available on your machine,
 try running the following command.
 
 ```sh
-$ pnpm -v && node -v
+$ pnpm -v && node -v && docker -v
 ```
 
 ## Table of contents
@@ -47,5 +47,5 @@ $ docker compose up
 don't forget to add the env file see the [env.example](https://github.com/Yedidyar/toast-tracker/blob/2127685845d31d1d29f26a932b8aa3fcd4ba5edd/.env.example)
 
 ```sh
-$ npm run dev
+$ pnpm run dev
 ```
