@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { signIn, useSession } from "next-auth/react";
-import NiceModal from "@ebay/nice-modal-react";
+import NiceModal, { show } from "@ebay/nice-modal-react";
 import { AddToastModal } from "~/modals/toasts";
 import { api } from "~/utils/api";
 import { Button } from "~/components/ui/button";
@@ -11,13 +11,18 @@ import { UserNav } from "~/components/user-nav";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Criminals } from "~/components/criminals";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   GitHubLogoIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
+import {
+  TermsAndConditionsModal,
+  termsAndConditionsLocalStorageKey,
+} from "~/modals/terms-and-conditions";
+import { useReadLocalStorage } from "usehooks-ts";
 
 const take = 10;
 const Home: NextPage = () => {
@@ -30,6 +35,15 @@ const Home: NextPage = () => {
     api.toast.getLeaderBoard.useQuery();
 
   const [parent] = useAutoAnimate();
+  const showTermsAndConditions = useReadLocalStorage<boolean | null>(
+    termsAndConditionsLocalStorageKey
+  );
+
+  useEffect(() => {
+    if (showTermsAndConditions !== false) {
+      void show(TermsAndConditionsModal);
+    }
+  }, [showTermsAndConditions]);
 
   return (
     <>
