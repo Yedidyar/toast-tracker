@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { periodHistory } from "~/data";
 
 const getStartOfPeriod = () => {
   const currentDate = new Date();
@@ -10,17 +11,6 @@ const getStartOfPeriod = () => {
 
   return new Date(currentDate.getFullYear(), 0);
 };
-
-const periodHistory = [
-  {
-    name: "2023/1",
-    toasts: 35,
-  },
-  {
-    name: "2022/2",
-    toasts: 34,
-  },
-];
 
 const getMaxPeriod = () => {
   let max = periodHistory[0];

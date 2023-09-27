@@ -4,6 +4,8 @@ import { Button } from "./ui/button";
 import { api } from "~/utils/api";
 import type { CriminalType } from "@prisma/client";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { Skeleton } from "./ui/skeleton";
 
 const criminalsTypes = {
   PERSONA_NON_GRATA: "פרסונה נון גרטה",
@@ -12,7 +14,10 @@ const criminalsTypes = {
 
 export const Criminals = () => {
   const [open, setOpen] = useState(false);
-  const { data } = api.criminal.getAll.useQuery(undefined, { enabled: open });
+  const { data, isLoading } = api.criminal.getAll.useQuery(undefined, {
+    enabled: open,
+  });
+  const [parent] = useAutoAnimate();
 
   return (
     <Popover
@@ -25,7 +30,11 @@ export const Criminals = () => {
         <Button variant="secondary">הצג עבריינים</Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <div className="space-y-8">
+        <div className="space-y-8" ref={parent}>
+          {isLoading &&
+            Array.from({ length: 3 }, (_, i) => (
+              <Skeleton key={i} className="h-9 w-9" />
+            ))}
           {data?.map(({ user: { name }, type }) => {
             return (
               <>
