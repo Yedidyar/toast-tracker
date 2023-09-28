@@ -116,8 +116,6 @@ export const TermsAndConditionsModal = NiceModal.create(() => {
               <Checkbox
                 checked={!showTermsAndConditions}
                 onCheckedChange={(checked) => {
-                  console.log(checked);
-
                   setShowTermsAndConditions(!checked);
                 }}
                 id="do-not-show"
