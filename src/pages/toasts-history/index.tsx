@@ -15,15 +15,15 @@ import type {
 } from "recharts/types/component/DefaultTooltipContent";
 import { periodHistory } from "~/data";
 
-const CustomTooltip = ({
+const TooltipContent = ({
   active,
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) => {
-  if (active) {
+  if (active && payload?.[0]?.value) {
     return (
       <div className="flex flex-col gap-2">
-        <span>כמות שתיות : {payload?.[0]?.value}</span>
+        <span>כמות שתיות : {payload[0].value}</span>
         <span>תקופה : {label}</span>
       </div>
     );
@@ -50,7 +50,7 @@ export default function ToastsHistory() {
         >
           <XAxis dataKey="name" />
           <YAxis />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<TooltipContent />} />
           <Legend />
           <Line
             type="monotone"

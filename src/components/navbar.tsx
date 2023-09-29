@@ -30,10 +30,7 @@ const Navbar = () => {
 
 export default Navbar;
 
-export function MainNav({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLElement>) {
+function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
   return (
     <nav
       className={cn(

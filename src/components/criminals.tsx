@@ -13,17 +13,17 @@ const criminalsTypes = {
 } as const satisfies Record<CriminalType, string>;
 
 export const Criminals = () => {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { data, isLoading } = api.criminal.getAll.useQuery(undefined, {
-    enabled: open,
+    enabled: isOpen,
   });
   const [parent] = useAutoAnimate();
 
   return (
     <Popover
-      open={open}
+      open={isOpen}
       onOpenChange={(isOpen) => {
-        setOpen(isOpen);
+        setIsOpen(isOpen);
       }}
     >
       <PopoverTrigger asChild>
