@@ -19,9 +19,9 @@ type Props = {
 };
 
 export const Combobox = ({ items, selectedItem, onChange }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <FormControl>
           <Button
@@ -50,7 +50,7 @@ export const Combobox = ({ items, selectedItem, onChange }: Props) => {
                 key={item.id}
                 onSelect={(value) => {
                   onChange(value === selectedItem?.label ? "" : item.id);
-                  setOpen(false);
+                  setIsOpen(false);
                 }}
               >
                 {item.label}

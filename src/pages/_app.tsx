@@ -7,6 +7,7 @@ import { api } from "../utils/api";
 import "../styles/globals.css";
 import NiceModal from "@ebay/nice-modal-react";
 import { ThemeProvider } from "~/components/theme-provider";
+import Layout from "~/components/layout";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -21,7 +22,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
           enableSystem
           disableTransitionOnChange
         >
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </ThemeProvider>
       </NiceModal.Provider>
     </SessionProvider>
