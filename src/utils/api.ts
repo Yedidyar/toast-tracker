@@ -45,7 +45,9 @@ export const api = createTRPCNext<AppRouter>({
         }),
       ],
       queryClientConfig: {
-        defaultOptions: { queries: { staleTime: 10000 } },
+        // for now I don't want  to fetch periodically
+        // only fetch on invalidation
+        defaultOptions: { queries: { staleTime: Infinity } },
       },
     };
   },

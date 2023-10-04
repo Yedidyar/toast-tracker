@@ -38,9 +38,27 @@ To install and set up, run:
 $ pnpm install
 ```
 
+### Setup Database
+
+You can do it without Docker, but Docker is the easiest.
+
 ```sh
 $ docker compose up
 ```
+
+Sync the db:
+
+```sh
+$ pnpx prisma db push
+# for an admin panel
+$ pnpx prisma studio
+```
+
+### Setup Next Auth
+
+The simple way is to use the [discord provider](https://next-auth.js.org/providers/discord).
+
+You should fill out the rest of the environment variables with mock data since the environment variables will be validated at runtime.
 
 ### Serving the app
 
