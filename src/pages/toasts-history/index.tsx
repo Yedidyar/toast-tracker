@@ -20,11 +20,12 @@ const TooltipContent = ({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) => {
-  if (active && payload?.[0]?.value) {
+  if (active && payload?.[0]) {
     return (
       <div className="flex flex-col gap-2">
         <span>כמות שתיות : {payload[0].value}</span>
         <span>תקופה : {label}</span>
+        <span>המפקד בתקופה : {(payload[0].payload as typeof periodHistory[number]).commander}</span>
       </div>
     );
   }
