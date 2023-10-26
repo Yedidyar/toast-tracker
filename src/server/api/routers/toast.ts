@@ -84,17 +84,21 @@ export const toast = createTRPCRouter({
         dateToBeDone: z.date(),
         occasionId: z.string(),
         wasDone: z.boolean().optional(),
+        userId: z.string(),
       })
     )
     .mutation(
-      async ({ ctx, input: { dateToBeDone, occasionId, wasDone, id } }) => {
+      async ({
+        ctx,
+        input: { dateToBeDone, occasionId, wasDone, id, userId },
+      }) => {
         return ctx.prisma.toast.update({
           where: {
             id,
           },
           data: {
             dateToBeDone,
-            userId: ctx.session.user.id,
+            userId,
             occasionId: occasionId,
             wasDone,
           },

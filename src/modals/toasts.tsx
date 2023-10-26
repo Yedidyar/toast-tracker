@@ -144,7 +144,7 @@ export const EditToastModal = NiceModal.create(
     const onSubmit = async (values: z.infer<typeof ToastFormSchema>) => {
       await mutateAsync({ ...values, id: toast.id });
       closeModal();
-      if (values.wasDone) {
+      if (values.wasDone && !toast.wasDone) {
         void confetti?.addConfetti();
       }
     };
@@ -179,17 +179,19 @@ export const EditToastModal = NiceModal.create(
                   <DialogFooter className="flex gap-4">
                     {(sessionData?.user.role === "ADMIN" ||
                       sessionData?.user.id === toast.userId) && (
-                      <Button
-                        variant="destructive"
-                        disabled={isLoading}
-                        onClick={onDelete}
-                      >
-                        מחיקה
-                      </Button>
+                      <>
+                        <Button
+                          variant="destructive"
+                          disabled={isLoading}
+                          onClick={onDelete}
+                        >
+                          מחיקה
+                        </Button>
+                        <Button type="submit" disabled={isLoading}>
+                          עריכה
+                        </Button>
+                      </>
                     )}
-                    <Button type="submit" disabled={isLoading}>
-                      עריכה
-                    </Button>
                   </DialogFooter>
                 }
               />
