@@ -23,7 +23,7 @@ import {
 } from "~/components/ui/form";
 import { Checkbox } from "~/components/ui/checkbox";
 
-import { useEffect, type ReactNode, useRef } from "react";
+import { type ReactNode } from "react";
 import type { Toast } from "@prisma/client";
 import { Combobox } from "~/components/ui/combobox";
 import {
@@ -39,8 +39,8 @@ import { he } from "date-fns/locale";
 import { Loading } from "~/components/ui/loading";
 import { Input } from "~/components/ui/input";
 import type { SelectSingleEventHandler } from "react-day-picker";
-import JSConfetti from "js-confetti";
 import { useSession } from "next-auth/react";
+import { useConfetti } from "~/hooks/use-confetti";
 
 const ToastFormSchema = z.object({
   dateToBeDone: z.date(),
@@ -53,12 +53,7 @@ const loadingContainerClassName =
   "absolute left-[50%] top-[50%] z-50 h-full w-full translate-x-[-50%] translate-y-[-50%]";
 
 export const AddToastModal = NiceModal.create(() => {
-  const jsConfettiRef = useRef<JSConfetti>();
-
-  useEffect(() => {
-    jsConfettiRef.current = new JSConfetti();
-  }, []);
-
+  const confetti = useConfetti();
   const modal = useModal();
 
   const utils = api.useContext();
@@ -73,7 +68,7 @@ export const AddToastModal = NiceModal.create(() => {
 
   const onSubmit = async (values: z.infer<typeof ToastFormSchema>) => {
     await mutateAsync(values);
-    void jsConfettiRef.current?.addConfetti();
+    void confetti?.addConfetti();
     closeModal();
   };
 
@@ -120,6 +115,7 @@ export const AddToastModal = NiceModal.create(() => {
 export const EditToastModal = NiceModal.create(
   ({ toast }: { toast: Toast }) => {
     const modal = useModal();
+    const confetti = useConfetti();
 
     const utils = api.useContext();
     const { data: sessionData } = useSession();
@@ -148,6 +144,9 @@ export const EditToastModal = NiceModal.create(
     const onSubmit = async (values: z.infer<typeof ToastFormSchema>) => {
       await mutateAsync({ ...values, id: toast.id });
       closeModal();
+      if (values.wasDone) {
+        void confetti?.addConfetti();
+      }
     };
 
     const closeModal = () => void modal.hide();
