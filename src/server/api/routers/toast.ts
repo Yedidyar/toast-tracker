@@ -42,7 +42,7 @@ export const toast = createTRPCRouter({
           occasion: { select: { name: true } },
           user: { select: { name: true } },
         },
-        orderBy: [{ dateToBeDone: isAdmin ? "desc" : "asc" }],
+        orderBy: [{ dateToBeDone: "asc" }],
         take,
         skip,
         where: isAdmin

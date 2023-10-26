@@ -53,7 +53,8 @@ const Home: NextPage = () => {
           </span>
           <span className="text-4xl font-bold"> / </span>
           <span className="text-4xl font-bold">
-            {leaderBoard?.toastCountInThisPeriod}
+            {/* TODO: remove hard coded toasts */}
+            {(leaderBoard?.toastCountInThisPeriod ?? 0) + 29}
           </span>
         </div>
       )}
