@@ -44,14 +44,23 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    role          Role      @default(USER)
+    roles         Role[]
     accounts      Account[]
     sessions      Session[]
     Toast         Toast[]
     Criminal      Criminal?
 }
 
-enum Role {
+model Role {
+    id     String       @id @default(cuid())
+    type   RoleTypeEnum
+    User   User?        @relation(fields: [userId], references: [id])
+    userId String?
+
+    @@index([userId])
+}
+
+enum RoleTypeEnum {
     USER
     ADMIN
 }

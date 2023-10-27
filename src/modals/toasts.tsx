@@ -177,7 +177,9 @@ export const EditToastModal = NiceModal.create(
                 defaultValues={toast}
                 footer={
                   <DialogFooter className="flex gap-4">
-                    {(sessionData?.user.role === "ADMIN" ||
+                    {(sessionData?.user.roles.some(
+                      (role) => role.type === "ADMIN"
+                    ) ||
                       sessionData?.user.id === toast.userId) && (
                       <>
                         <Button
@@ -392,7 +394,7 @@ const ToastForm = ({
             );
           }}
         />
-        {sessionData?.user.role === "ADMIN" && (
+        {sessionData?.user.roles.some((role) => role.type === "ADMIN") && (
           <FormField
             control={form.control}
             name="wasDone"

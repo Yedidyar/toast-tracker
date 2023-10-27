@@ -15,6 +15,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 const take = 10;
 const Home: NextPage = () => {
   const { data: sessionData } = useSession();
+  console.log(sessionData);
 
   const [skip, setSkip] = useState(0);
 
@@ -56,7 +57,7 @@ const Home: NextPage = () => {
           {data && data.map((toast) => <ToastCard key={toast.id} {...toast} />)}
         </div>
       </ScrollArea>
-      {sessionData?.user.role === "ADMIN" && (
+      {sessionData?.user?.roles?.some((role) => role.type === "ADMIN") && (
         <div className="flex items-center gap-2">
           <Button
             onClick={() => {

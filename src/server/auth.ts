@@ -22,12 +22,12 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      role: Role;
+      roles: Role[];
     } & DefaultSession["user"];
   }
 
   interface User {
-    role: Role;
+    roles: Role[];
   }
 }
 
@@ -40,9 +40,11 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user }) {
+      console.log(user);
+
       if (session.user) {
         session.user.id = user.id;
-        session.user.role = user.role;
+        session.user.roles = user.roles;
       }
       return session;
     },

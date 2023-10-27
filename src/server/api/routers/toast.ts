@@ -35,7 +35,9 @@ export const toast = createTRPCRouter({
       })
     )
     .query(({ ctx, input: { skip, take } }) => {
-      const isAdmin = ctx.session?.user.role === "ADMIN";
+      const isAdmin = ctx.session?.user.roles.some(
+        (role) => role.type === "ADMIN"
+      );
 
       return ctx.prisma.toast.findMany({
         include: {
