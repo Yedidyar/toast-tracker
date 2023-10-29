@@ -12,9 +12,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useReadLocalStorage } from "usehooks-ts";
+import {
+  TermsAndConditionsModal,
+  termsAndConditionsLocalStorageKey,
+} from "~/modals/terms-and-conditions";
+import { show } from "@ebay/nice-modal-react";
 
 const Navbar = () => {
   const { data: sessionData } = useSession();
+  const showTermsAndConditions = useReadLocalStorage<boolean | null>(
+    termsAndConditionsLocalStorageKey
+  );
 
   return (
     <div className="border-b">
@@ -23,7 +32,20 @@ const Navbar = () => {
           {sessionData ? (
             <UserNav {...sessionData} />
           ) : (
-            <Button onClick={() => signIn()}>התחבר</Button>
+            <Button
+              onClick={async () => {
+                if (showTermsAndConditions !== false) {
+                  await show(TermsAndConditionsModal).then(() => {
+                    void signIn();
+                  });
+
+                  return;
+                }
+                void signIn();
+              }}
+            >
+              התחבר
+            </Button>
           )}
           <ModeToggle />
         </div>

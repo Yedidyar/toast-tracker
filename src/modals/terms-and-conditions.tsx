@@ -21,7 +21,10 @@ export const termsAndConditionsLocalStorageKey =
 
 export const TermsAndConditionsModal = NiceModal.create(() => {
   const modal = useModal();
-  const closeModal = () => void modal.hide();
+  const closeModal = () => {
+    modal.resolve({ resolved: true });
+    void modal.hide();
+  };
 
   const [showTermsAndConditions, setShowTermsAndConditions] = useLocalStorage(
     termsAndConditionsLocalStorageKey,
@@ -125,9 +128,22 @@ export const TermsAndConditionsModal = NiceModal.create(() => {
               </div>
             </div>
           </div>
-          <Button disabled={!isApproved} onClick={closeModal}>
-            אישור
-          </Button>
+          <div className="flex justify-center gap-4">
+            <Button
+              disabled={!isApproved}
+              onClick={closeModal}
+              className="w-1/3"
+            >
+              אישור
+            </Button>
+            <Button
+              onClick={closeModal}
+              variant="destructive"
+              className="w-1/3"
+            >
+              לא אני דור שטרית
+            </Button>
+          </div>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
