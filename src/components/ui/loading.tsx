@@ -2,26 +2,39 @@ export const Loading = () => {
   return (
     <svg
       version="1.1"
-      id="L9"
+      id="L3"
+      xmlns="http://www.w3.org/2000/svg"
       x="0px"
       y="0px"
       viewBox="0 0 100 100"
-      enableBackground="new 0 0 0 0"
+      enable-background="new 0 0 0 0"
     >
-      <path
+      <circle
+        fill="none"
+        stroke="#fff"
+        stroke-width="4"
+        cx="50"
+        cy="50"
+        r="44"
+        style={{ opacity: 0.5 }}
+      />
+      <circle
         fill="#fff"
-        d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50"
+        stroke="#e74c3c"
+        stroke-width="3"
+        cx="8"
+        cy="54"
+        r="6"
       >
         <animateTransform
           attributeName="transform"
-          attributeType="XML"
+          dur="2s"
           type="rotate"
-          dur="1s"
-          from="0 50 50"
-          to="360 50 50"
+          from="0 50 48"
+          to="360 50 52"
           repeatCount="indefinite"
         />
-      </path>
+      </circle>
     </svg>
   );
 };
