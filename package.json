@@ -53,6 +53,7 @@
     "zod": "^3.20.2"
   },
   "devDependencies": {
+    "@types/gtag.js": "^0.0.17",
     "@types/memory-cache": "^0.2.4",
     "@types/node": "^18.11.18",
     "@types/prettier": "^2.7.2",
