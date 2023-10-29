@@ -49,6 +49,16 @@ const ToastFormSchema = z.object({
   wasDone: z.boolean().optional(),
 });
 
+const invalidateToast = async (
+  utils: ReturnType<typeof api.useContext>,
+  invaladate: () => unknown
+) => {
+  await invaladate();
+  utils.toast.invalidate().catch((e) => {
+    console.error(e);
+  });
+};
+
 const loadingContainerClassName =
   "absolute left-[50%] top-[50%] z-50 h-full w-full translate-x-[-50%] translate-y-[-50%]";
 
@@ -57,13 +67,11 @@ export const AddToastModal = NiceModal.create(() => {
   const modal = useModal();
 
   const utils = api.useContext();
+  const { mutateAsync: invalidate } =
+    api.toast.invalidateLeaderBoard.useMutation();
 
   const { mutateAsync, isLoading } = api.toast.create.useMutation({
-    onSuccess: () => {
-      utils.toast.invalidate().catch((e) => {
-        console.error(e);
-      });
-    },
+    onSuccess: () => invalidateToast(utils, invalidate),
   });
 
   const onSubmit = async (values: z.infer<typeof ToastFormSchema>) => {
@@ -120,21 +128,16 @@ export const EditToastModal = NiceModal.create(
     const utils = api.useContext();
     const { data: sessionData } = useSession();
 
+    const { mutateAsync: invalidate } =
+      api.toast.invalidateLeaderBoard.useMutation();
+
     const { mutateAsync, isLoading } = api.toast.update.useMutation({
-      onSuccess: () => {
-        utils.toast.invalidate().catch((e) => {
-          console.error(e);
-        });
-      },
+      onSuccess: () => invalidateToast(utils, invalidate),
     });
 
     const { mutateAsync: mutateDeleteAsync, isLoading: isLoadingDelete } =
       api.toast.delete.useMutation({
-        onSuccess: () => {
-          utils.toast.invalidate().catch((e) => {
-            console.error(e);
-          });
-        },
+        onSuccess: () => invalidateToast(utils, invalidate),
       });
 
     const onDelete = async () => {

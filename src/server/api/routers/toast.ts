@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { periodHistory } from "~/data";
+import cache from "memory-cache";
+
+export const TOAST_COUNT_IN_THIS_PERIOD = "toastCountInThisPeriod";
 
 const getStartOfPeriod = () => {
   const currentDate = new Date();
@@ -119,6 +122,17 @@ export const toast = createTRPCRouter({
       });
     }),
   getLeaderBoard: publicProcedure.query(async ({ ctx }) => {
+    const cachedToastCountInThisPeriod = (
+      cache.get as (str: string) => number | null
+    )(TOAST_COUNT_IN_THIS_PERIOD);
+
+    if (cachedToastCountInThisPeriod !== null) {
+      return {
+        toastCountInThisPeriod: cachedToastCountInThisPeriod,
+        maxPeriod: getMaxPeriod(),
+      };
+    }
+
     const toastCountInThisPeriod = await ctx.prisma.toast.count({
       where: {
         AND: [
@@ -131,6 +145,11 @@ export const toast = createTRPCRouter({
         ],
       },
     });
+
+    cache.put(TOAST_COUNT_IN_THIS_PERIOD, toastCountInThisPeriod);
     return { toastCountInThisPeriod, maxPeriod: getMaxPeriod() };
+  }),
+  invalidateLeaderBoard: protectedProcedure.mutation(() => {
+    cache.del(TOAST_COUNT_IN_THIS_PERIOD);
   }),
 });
