@@ -11,8 +11,10 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
-      const site = new NextjsSite(stack, "toast-site-tracker",{
-        
+      const site = new NextjsSite(stack, "site", {
+        environment: {
+          DATABASE_URL: process.env.DATABASE_URL!,
+        },
       });
 
       stack.addOutputs({
