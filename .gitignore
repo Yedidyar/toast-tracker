@@ -40,3 +40,10 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# sst
+.sst
+.build
+
+# opennext
+.open-next
