@@ -2,6 +2,8 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { periodHistory } from "~/data";
 import cache from "memory-cache";
+import { toast as toastModel, user } from "drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export const TOAST_COUNT_IN_THIS_PERIOD = "toastCountInThisPeriod";
 
@@ -37,8 +39,15 @@ export const toast = createTRPCRouter({
         skip: z.number(),
       })
     )
-    .query(({ ctx, input: { skip, take } }) => {
+    .query(async ({ ctx, input: { skip, take } }) => {
       const isAdmin = ctx.session?.user.role === "ADMIN";
+
+      console.log(
+        await ctx.db
+          .select()
+          .from(toastModel)
+          .leftJoin(user, eq(user.id, toastModel.userId))
+      );
 
       return ctx.prisma.toast.findMany({
         include: {
