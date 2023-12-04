@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { periodHistory } from "~/data";
 import cache from "memory-cache";
 import { toast as toastModel, user } from "drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, gte } from "drizzle-orm";
 
 export const TOAST_COUNT_IN_THIS_PERIOD = "toastCountInThisPeriod";
 
@@ -42,25 +42,36 @@ export const toast = createTRPCRouter({
     .query(async ({ ctx, input: { skip, take } }) => {
       const isAdmin = ctx.session?.user.role === "ADMIN";
 
-      console.log(
-        await ctx.db
-          .select()
-          .from(toastModel)
-          .leftJoin(user, eq(user.id, toastModel.userId))
-      );
+      const baseQuery = ctx.db
+        .select()
+        .from(toastModel)
+        .limit(take)
+        .offset(skip)
+        .leftJoin(user, eq(user.id, toastModel.userId));
 
-      return ctx.prisma.toast.findMany({
-        include: {
-          occasion: { select: { name: true } },
-          user: { select: { name: true } },
-        },
-        orderBy: [{ dateToBeDone: "asc" }],
-        take,
-        skip,
-        where: isAdmin
-          ? {}
-          : { dateToBeDone: { gte: new Date(Date.now() - 60 * 1000 * 30) } },
-      });
+      if (!isAdmin) {
+        return baseQuery.where(
+          gte(
+            toastModel.dateToBeDone,
+            new Date(Date.now() - 60 * 1000 * 30).toISOString()
+          )
+        );
+      }
+
+      return baseQuery;
+
+      // return ctx.prisma.toast.findMany({
+      //   include: {
+      //     occasion: { select: { name: true } },
+      //     user: { select: { name: true } },
+      //   },
+      //   orderBy: [{ dateToBeDone: "asc" }],
+      //   take,
+      //   skip,
+      //   where: isAdmin
+      //     ? {}
+      //     : { dateToBeDone: { gte: new Date(Date.now() - 60 * 1000 * 30) } },
+      // });
     }),
   getAllByUser: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.toast.findMany({
@@ -124,11 +135,7 @@ export const toast = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input: { id } }) => {
-      return ctx.prisma.toast.delete({
-        where: {
-          id,
-        },
-      });
+      return ctx.db.delete(toastModel).where(eq(toastModel.id, id));
     }),
   getLeaderBoard: publicProcedure.query(async ({ ctx }) => {
     const cachedToastCountInThisPeriod = (

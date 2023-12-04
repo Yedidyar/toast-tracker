@@ -1,9 +1,12 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
+import { criminal as criminalModel, user } from "../../../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export const criminal = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.criminal.findMany({
-      include: { user: { select: { name: true } } },
-    });
+    return await ctx.db
+      .select()
+      .from(criminalModel)
+      .leftJoin(user, eq(user.id, criminalModel.userId));
   }),
 });

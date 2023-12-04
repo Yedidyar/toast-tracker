@@ -9,12 +9,20 @@ import {
 
 import format from "date-fns/format";
 import { he } from "date-fns/locale";
-import type { Occasion, Toast } from "@prisma/client";
+import type { Occasion } from "@prisma/client";
 import NiceModal from "@ebay/nice-modal-react";
 import { EditToastModal } from "~/modals/toasts";
 import { cn } from "~/lib/utils";
 import { useSession } from "next-auth/react";
 import { Skeleton } from "./ui/skeleton";
+import type { toast } from "drizzle/schema";
+import { inferRouterOutputs } from "@trpc/server";
+import { AppRouter } from "~/server/api/root";
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type OutputExample = RouterOutput["someRoute"]["someQuery"];
+
 
 type Props = {
   occasion: Pick<Occasion, "name">;
@@ -22,13 +30,16 @@ type Props = {
     name: string | null;
   };
   className?: string;
-} & Toast;
+} & typeof toast;
 
 const className = "h-44 w-44 p-5 lg:h-52 lg:w-52 bg-primary-foreground lg:p-10";
 
 export function ToastCard(props: Props) {
   const { data: sessionData } = useSession();
 
+  console.log(props);
+
+  return null;
   const { dateToBeDone, occasion, user } = props;
   return (
     <Card

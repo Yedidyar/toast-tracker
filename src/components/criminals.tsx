@@ -35,15 +35,17 @@ export const Criminals = () => {
             Array.from({ length: 3 }, (_, i) => (
               <Skeleton key={i} className="h-9 w-9" />
             ))}
-          {data?.map(({ user: { name }, type }) => {
+          {data?.map(({ User, Criminal: { type } }) => {
             return (
               <>
                 <div className="flex items-center">
                   <Avatar className="h-9 w-9">
-                    <AvatarFallback>{name.slice(0, 2)}</AvatarFallback>
+                    <AvatarFallback>{User?.name.slice(0, 2)}</AvatarFallback>
                   </Avatar>
                   <div className="mr-4 space-y-1">
-                    <p className="text-sm font-medium leading-none">{name}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {User?.name}
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {criminalsTypes[type]}
                     </p>

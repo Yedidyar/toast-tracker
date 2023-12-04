@@ -22,4 +22,4 @@ export const poolConnection = mysql.createPool({
   password: env.DATABASE_PASSWORD,
 });
 
-export const db = drizzle(poolConnection);
+export const db = drizzle(poolConnection, { logger: true });
