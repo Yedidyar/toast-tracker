@@ -40,7 +40,7 @@ const Home: NextPage = () => {
           <span className="text-4xl font-bold"> / </span>
           <span className="text-4xl font-bold">
             {/* TODO: remove hard coded toasts */}
-            {(leaderBoard?.toastCountInThisPeriod ?? 0) + 29}
+            {leaderBoard?.toastCountInThisPeriod ?? 0}
           </span>
         </div>
       )}
