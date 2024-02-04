@@ -377,7 +377,9 @@ const ToastForm = ({
                       mode="single"
                       selected={field.value}
                       onSelect={handleDateChange}
-                      disabled={(date) => date < new Date()}
+                      disabled={(date) =>
+                        date < new Date() && sessionData?.user.role !== "ADMIN"
+                      }
                       footer={
                         <Input
                           type="time"
