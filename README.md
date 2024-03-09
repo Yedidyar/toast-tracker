@@ -49,9 +49,9 @@ $ docker compose up
 Sync the db:
 
 ```sh
-$ pnpx prisma db push
+$ pnpm push
 # for an admin panel
-$ pnpx prisma studio
+$ pnpm studio
 ```
 
 ### Setup Next Auth

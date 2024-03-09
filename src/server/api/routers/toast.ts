@@ -2,6 +2,9 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { periodHistory } from "~/data";
 import cache from "memory-cache";
+import { toast as toastTable, user, occasion } from "~/drizzle/schema";
+import { and, asc, count, eq, gte } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
 
 export const TOAST_COUNT_IN_THIS_PERIOD = "toastCountInThisPeriod";
 
@@ -37,28 +40,25 @@ export const toast = createTRPCRouter({
         skip: z.number(),
       })
     )
-    .query(({ ctx, input: { skip, take } }) => {
+    .query(async ({ ctx, input: { skip, take } }) => {
       const isAdmin = ctx.session?.user.role === "ADMIN";
+      const query = ctx.db
+        .select()
+        .from(toastTable)
+        .orderBy(asc(toastTable.dateToBeDone))
+        .limit(take)
+        .offset(skip)
+        .leftJoin(user, eq(user.id, toastTable.userId))
+        .leftJoin(occasion, eq(occasion.id, toastTable.occasionId));
 
-      return ctx.prisma.toast.findMany({
-        include: {
-          occasion: { select: { name: true } },
-          user: { select: { name: true } },
-        },
-        orderBy: [{ dateToBeDone: "asc" }],
-        take,
-        skip,
-        where: isAdmin
-          ? {}
-          : { dateToBeDone: { gte: new Date(Date.now() - 60 * 1000 * 30) } },
-      });
+      if (!isAdmin) {
+        return query.where(
+          gte(toastTable.dateToBeDone, new Date(Date.now() - 60 * 1000 * 30))
+        );
+      }
+
+      return query;
     }),
-  getAllByUser: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.toast.findMany({
-      where: { userId: ctx.session.user.id },
-      include: { occasion: { select: { name: true } } },
-    });
-  }),
   create: protectedProcedure
     .input(
       z.object({
@@ -68,18 +68,9 @@ export const toast = createTRPCRouter({
         wasDone: z.boolean().optional(),
       })
     )
-    .mutation(
-      async ({ ctx, input: { dateToBeDone, occasionId, wasDone, userId } }) => {
-        return ctx.prisma.toast.create({
-          data: {
-            dateToBeDone,
-            userId,
-            occasionId,
-            wasDone,
-          },
-        });
-      }
-    ),
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.insert(toastTable).values({ ...input, id: createId() });
+    }),
   update: protectedProcedure
     .input(
       z.object({
@@ -95,17 +86,15 @@ export const toast = createTRPCRouter({
         ctx,
         input: { dateToBeDone, occasionId, wasDone, id, userId },
       }) => {
-        return ctx.prisma.toast.update({
-          where: {
-            id,
-          },
-          data: {
+        return ctx.db
+          .update(toastTable)
+          .set({
             dateToBeDone,
             userId,
             occasionId: occasionId,
             wasDone,
-          },
-        });
+          })
+          .where(eq(toastTable.id, id));
       }
     ),
   delete: protectedProcedure
@@ -115,11 +104,7 @@ export const toast = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input: { id } }) => {
-      return ctx.prisma.toast.delete({
-        where: {
-          id,
-        },
-      });
+      return ctx.db.delete(toastTable).where(eq(toastTable.id, id));
     }),
   getLeaderBoard: publicProcedure.query(async ({ ctx }) => {
     const cachedToastCountInThisPeriod = (
@@ -133,21 +118,21 @@ export const toast = createTRPCRouter({
       };
     }
 
-    const toastCountInThisPeriod = await ctx.prisma.toast.count({
-      where: {
-        AND: [
-          {
-            wasDone: true,
-          },
-          {
-            dateToBeDone: { gte: getStartOfPeriod() },
-          },
-        ],
-      },
-    });
+    const [toastCountInThisPeriod] = await ctx.db
+      .select({ value: count() })
+      .from(toastTable)
+      .where(
+        and(
+          eq(toastTable.wasDone, true),
+          gte(toastTable.dateToBeDone, getStartOfPeriod())
+        )
+      );
 
-    cache.put(TOAST_COUNT_IN_THIS_PERIOD, toastCountInThisPeriod);
-    return { toastCountInThisPeriod, maxPeriod: getMaxPeriod() };
+    cache.put(TOAST_COUNT_IN_THIS_PERIOD, toastCountInThisPeriod?.value);
+    return {
+      toastCountInThisPeriod: toastCountInThisPeriod?.value,
+      maxPeriod: getMaxPeriod(),
+    };
   }),
   invalidateLeaderBoard: protectedProcedure.mutation(() => {
     cache.del(TOAST_COUNT_IN_THIS_PERIOD);
