@@ -24,7 +24,7 @@ import {
 import { Checkbox } from "~/components/ui/checkbox";
 
 import { type ReactNode } from "react";
-import type { Toast } from "~/drizzle/schema";
+import type { Toast } from "@prisma/client";
 import { Combobox } from "~/components/ui/combobox";
 import {
   Popover,

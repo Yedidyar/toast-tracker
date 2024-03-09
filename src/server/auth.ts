@@ -6,12 +6,10 @@ import {
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../env/server.mjs";
-import { db } from "./db";
-import type { User } from "~/drizzle/schema";
-import { DrizzleAdapter } from "~/lib/auth/drizzle-adapter";
-
-type Role = User["role"];
+import { prisma } from "./db";
+import type { Role } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types.
@@ -49,7 +47,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  adapter: DrizzleAdapter(db),
+  adapter: PrismaAdapter(prisma),
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,

@@ -9,8 +9,7 @@ import {
 
 import format from "date-fns/format";
 import { he } from "date-fns/locale";
-import type { Toast, Occasion } from "~/drizzle/schema";
-
+import type { Occasion, Toast } from "@prisma/client";
 import NiceModal from "@ebay/nice-modal-react";
 import { EditToastModal } from "~/modals/toasts";
 import { cn } from "~/lib/utils";
@@ -18,27 +17,19 @@ import { useSession } from "next-auth/react";
 import { Skeleton } from "./ui/skeleton";
 
 type Props = {
-  Occasion: Pick<Occasion, "name"> | null;
-  User: {
+  occasion: Pick<Occasion, "name">;
+  user: {
     name: string | null;
-  } | null;
+  };
   className?: string;
-  Toast: Toast;
-};
+} & Toast;
 
 const className = "h-44 w-44 p-5 lg:h-52 lg:w-52 bg-primary-foreground lg:p-10";
 
 export function ToastCard(props: Props) {
   const { data: sessionData } = useSession();
-  if (!props.Occasion || !props.User) {
-    return null;
-  }
 
-  const {
-    Occasion,
-    Toast: { dateToBeDone },
-    User,
-  } = props;
+  const { dateToBeDone, occasion, user } = props;
   return (
     <Card
       className={cn(
@@ -49,13 +40,13 @@ export function ToastCard(props: Props) {
       )}
       onClick={() => {
         if (sessionData) {
-          return NiceModal.show(EditToastModal, { toast: props.Toast });
+          return NiceModal.show(EditToastModal, { toast: props });
         }
       }}
     >
       <CardHeader>
         <CardTitle>
-          {User.name} - {Occasion.name}
+          {user.name} - {occasion.name}
         </CardTitle>
         <CardDescription>
           {format(dateToBeDone, "dd.MM.yyyy HH:mm", { locale: he })}
