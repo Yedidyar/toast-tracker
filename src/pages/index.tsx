@@ -53,7 +53,8 @@ const Home: NextPage = () => {
         <div className="flex flex-row items-center gap-4 p-6" ref={parent}>
           {isLoading &&
             Array.from({ length: 7 }, (_, i) => <ToastCardSkelton key={i} />)}
-          {data && data.map((toast) => <ToastCard key={toast.id} {...toast} />)}
+          {data &&
+            data.map((toast) => <ToastCard key={toast.Toast.id} {...toast} />)}
         </div>
       </ScrollArea>
       {sessionData?.user.role === "ADMIN" && (
